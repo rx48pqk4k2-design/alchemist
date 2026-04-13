@@ -166,12 +166,141 @@
       opacity: 1;
     }
 
+
+    .preorder-trigger {
+      transition: opacity 180ms ease, transform 180ms ease, background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+    }
+    .preorder-trigger:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .preorder-trigger:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 36px rgba(20, 51, 40, 0.10);
+    }
+    .preorder-hint {
+      min-height: 1rem;
+    }
+    .preorder-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(21, 28, 24, 0.42);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+    }
+    .preorder-overlay.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .preorder-dialog {
+      width: min(100%, 32rem);
+      max-height: min(88vh, 860px);
+      overflow: auto;
+      border: 1px solid rgba(0, 81, 63, 0.10);
+      background: rgba(255, 253, 249, 0.98);
+      box-shadow: 0 28px 80px rgba(18, 27, 22, 0.18);
+      transform: translateY(18px);
+      opacity: 0;
+      transition: transform 240ms ease, opacity 240ms ease;
+    }
+    .preorder-overlay.is-open .preorder-dialog {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .preorder-field {
+      display: grid;
+      gap: 0.55rem;
+    }
+    .preorder-field label,
+    .preorder-eyebrow {
+      font-size: 0.67rem;
+      line-height: 1;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #5f675f;
+    }
+    .preorder-input,
+    .preorder-textarea,
+    .preorder-readonly {
+      width: 100%;
+      border: 1px solid rgba(28, 28, 24, 0.10);
+      background: rgba(255, 253, 249, 0.94);
+      padding: 0.9rem 1rem;
+      color: #1c1c18;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+    }
+    .preorder-input:focus,
+    .preorder-textarea:focus {
+      outline: none;
+      border-color: rgba(0, 81, 63, 0.30);
+      box-shadow: 0 0 0 4px rgba(0, 81, 63, 0.06);
+      background: rgba(255,255,255,0.98);
+    }
+    .preorder-readonly {
+      color: #143328;
+      background: rgba(0, 81, 63, 0.04);
+    }
+    .preorder-textarea {
+      min-height: 7.5rem;
+      resize: vertical;
+    }
+    .preorder-status {
+      min-height: 1.5rem;
+      font-size: 0.74rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #00513f;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 220ms ease, transform 220ms ease;
+    }
+    .preorder-status.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .preorder-status.is-error {
+      color: #7f2d2f;
+    }
+    .preorder-success {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 18rem;
+      padding: 2rem;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .preorder-success.is-visible {
+      display: flex;
+      animation: preorderSuccessIn 360ms ease forwards;
+    }
+    @keyframes preorderSuccessIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .swatch-button,
       .motif-button,
       .swap-image,
       .feedback-toast,
-      .image-shell::after {
+      .image-shell::after,
+      .preorder-overlay,
+      .preorder-dialog,
+      .preorder-status,
+      .preorder-success,
+      .preorder-trigger {
         transition: none !important;
         animation: none !important;
       }
@@ -390,6 +519,10 @@
               <input id="intentionInput" type="text" value="Clarity and calm" class="interactive-input w-full rounded-sm border border-line bg-surface px-4 py-3 outline-none">
             </div>
             <button type="button" id="previewConceptButton" data-toast="Refreshing concept preview" class="interactive-cta w-full rounded-sm bg-primary px-6 py-4 text-sm uppercase tracking-[0.18em] text-white">Preview Concept</button>
+            <div class="pt-3 border-t border-line/70">
+              <button type="button" id="preorderButton" class="preorder-trigger interactive-cta w-full rounded-sm border border-primary/16 bg-paper px-6 py-4 text-sm uppercase tracking-[0.18em] text-primary" aria-haspopup="dialog" aria-controls="preorderModal" disabled>Preorder</button>
+              <p id="preorderHint" class="preorder-hint mt-3 text-[11px] uppercase tracking-[0.16em] text-muted/80">Select a color and motif to continue.</p>
+            </div>
           </div>
           <div class="rounded-sm bg-paper p-8 shadow-editorial">
             <div class="image-shell design-preview-shell aspect-[4/5] overflow-hidden rounded-sm bg-soft relative"><img id="designBaseImage" src="assets/variants/motif-studio/motif-base-green.png" alt="Green base textile preview" class="swap-image w-full h-full object-cover image-refined"><img id="designMotifImage" src="assets/variants/motif-studio/bamboo-green.png" alt="Bamboo motif preview" class="swap-image design-motif-overlay image-refined absolute inset-0 w-full h-full object-contain pointer-events-none"></div>
@@ -398,6 +531,67 @@
         </div>
       </div>
     </section>
+
+    <div id="preorderModal" class="preorder-overlay" aria-hidden="true">
+      <div class="preorder-dialog rounded-sm">
+        <div class="flex items-start justify-between gap-6 border-b border-line/70 px-6 py-5 md:px-8">
+          <div>
+            <p class="preorder-eyebrow mb-3">Preorder Request</p>
+            <h3 class="font-headline text-2xl md:text-3xl leading-tight text-primary">Reserve Your Ritual</h3>
+            <p class="mt-3 max-w-md text-sm leading-7 text-muted">Share your details and current selection. We’ll follow up with the next steps shortly.</p>
+          </div>
+          <button type="button" id="closePreorderModal" class="interactive-cta text-xs uppercase tracking-[0.18em] text-muted hover:text-primary">Close</button>
+        </div>
+
+        <div id="preorderFormWrap" class="px-6 py-6 md:px-8 md:py-8">
+          <form id="preorderForm" action="https://formspree.io/f/mdaynqzb" method="POST" class="space-y-5">
+            <input type="hidden" id="preorderColorInput" name="Selected Color" value="">
+            <input type="hidden" id="preorderMotifInput" name="Selected Motif" value="">
+            <input type="hidden" name="_subject" value="Alchemist Preorder Request">
+
+            <div class="grid gap-5 md:grid-cols-2">
+              <div class="preorder-field md:col-span-1">
+                <label for="preorderName">Customer Name</label>
+                <input id="preorderName" name="Customer Name" type="text" required class="preorder-input rounded-sm" autocomplete="name">
+              </div>
+              <div class="preorder-field md:col-span-1">
+                <label for="preorderEmail">Email</label>
+                <input id="preorderEmail" name="Email" type="email" required class="preorder-input rounded-sm" autocomplete="email">
+              </div>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-2">
+              <div class="preorder-field">
+                <label for="preorderColorDisplay">Selected Color</label>
+                <input id="preorderColorDisplay" type="text" readonly class="preorder-readonly rounded-sm" value="">
+              </div>
+              <div class="preorder-field">
+                <label for="preorderMotifDisplay">Selected Motif</label>
+                <input id="preorderMotifDisplay" type="text" readonly class="preorder-readonly rounded-sm" value="">
+              </div>
+            </div>
+
+            <div class="preorder-field">
+              <label for="preorderNotes">Optional Message / Notes</label>
+              <textarea id="preorderNotes" name="Optional Message / Notes" class="preorder-textarea rounded-sm" placeholder="Tell us anything you’d like us to know."></textarea>
+            </div>
+
+            <div class="flex flex-col gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
+              <p id="preorderStatus" class="preorder-status" aria-live="polite"></p>
+              <button type="submit" id="preorderSubmitButton" class="interactive-cta rounded-sm bg-primary px-7 py-4 text-sm uppercase tracking-[0.18em] text-white">Submit Preorder</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="preorderSuccessState" class="preorder-success px-6 py-10 md:px-8" aria-live="polite">
+          <div>
+            <p class="preorder-eyebrow mb-4">Request Received</p>
+            <h4 class="font-headline text-3xl text-primary">Thank you, we’ll be in touch soon.</h4>
+            <p class="mt-4 max-w-sm text-sm leading-7 text-muted">Your current ritual selection has been saved. We’ll follow up with the next steps shortly.</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <section id="studio" class="px-6 md:px-10 py-16 md:py-24 bg-surface">
       <div class="max-w-7xl mx-auto space-y-12">
@@ -676,6 +870,82 @@
     const designBaseImage = document.getElementById('designBaseImage');
     const designMotifImage = document.getElementById('designMotifImage');
     const designAssetsRoot = 'assets/variants/motif-studio';
+    const preorderButton = document.getElementById('preorderButton');
+    const preorderHint = document.getElementById('preorderHint');
+    const preorderModal = document.getElementById('preorderModal');
+    const closePreorderModal = document.getElementById('closePreorderModal');
+    const preorderForm = document.getElementById('preorderForm');
+    const preorderFormWrap = document.getElementById('preorderFormWrap');
+    const preorderSuccessState = document.getElementById('preorderSuccessState');
+    const preorderStatus = document.getElementById('preorderStatus');
+    const preorderSubmitButton = document.getElementById('preorderSubmitButton');
+    const preorderColorInput = document.getElementById('preorderColorInput');
+    const preorderMotifInput = document.getElementById('preorderMotifInput');
+    const preorderColorDisplay = document.getElementById('preorderColorDisplay');
+    const preorderMotifDisplay = document.getElementById('preorderMotifDisplay');
+    const preorderName = document.getElementById('preorderName');
+
+
+    function formatSelectionLabel(value) {
+      if (!value) return '';
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    function hasCompleteDesignSelection() {
+      return Boolean(designStudioState.color && designStudioState.motif);
+    }
+
+    function syncPreorderSelectionFields() {
+      const colorLabel = formatSelectionLabel(designStudioState.color);
+      const motifLabel = formatSelectionLabel(designStudioState.motif);
+      if (preorderColorInput) preorderColorInput.value = colorLabel;
+      if (preorderMotifInput) preorderMotifInput.value = motifLabel;
+      if (preorderColorDisplay) preorderColorDisplay.value = colorLabel;
+      if (preorderMotifDisplay) preorderMotifDisplay.value = motifLabel;
+    }
+
+    function updatePreorderAvailability() {
+      const ready = hasCompleteDesignSelection();
+      if (preorderButton) preorderButton.disabled = !ready;
+      if (preorderHint) preorderHint.textContent = ready
+        ? `Ready to preorder · ${formatSelectionLabel(designStudioState.color)} × ${formatSelectionLabel(designStudioState.motif)}`
+        : 'Select a color and motif to continue.';
+      syncPreorderSelectionFields();
+    }
+
+    function openPreorderModal() {
+      if (!hasCompleteDesignSelection()) {
+        showToast('Select a color and motif first');
+        return;
+      }
+      syncPreorderSelectionFields();
+      preorderModal?.classList.add('is-open');
+      preorderModal?.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('overflow-hidden');
+      requestAnimationFrame(() => preorderName?.focus());
+    }
+
+    function closePreorderDialog() {
+      preorderModal?.classList.remove('is-open');
+      preorderModal?.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('overflow-hidden');
+      preorderButton?.focus();
+    }
+
+    function setPreorderStatus(message = '', isError = false) {
+      if (!preorderStatus) return;
+      preorderStatus.textContent = message;
+      preorderStatus.classList.toggle('is-visible', Boolean(message));
+      preorderStatus.classList.toggle('is-error', Boolean(message) && isError);
+    }
+
+    function resetPreorderState() {
+      preorderFormWrap?.classList.remove('hidden');
+      preorderSuccessState?.classList.remove('is-visible');
+      setPreorderStatus('');
+      preorderSubmitButton?.removeAttribute('disabled');
+      if (preorderSubmitButton) preorderSubmitButton.textContent = 'Submit Preorder';
+    }
 
     function updateDesignButtonStates() {
       designColorButtons.forEach(button => {
@@ -713,6 +983,8 @@
         previewShell?.classList.add('preview-flash');
       }
 
+      updatePreorderAvailability();
+
       if (announce) {
         showToast(`${designStudioState.color} × ${designStudioState.motif} selected`);
       }
@@ -736,9 +1008,58 @@
       });
     });
 
+
+    preorderButton?.addEventListener('click', openPreorderModal);
+    closePreorderModal?.addEventListener('click', closePreorderDialog);
+
+    preorderModal?.addEventListener('click', (event) => {
+      if (event.target === preorderModal) closePreorderDialog();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && preorderModal?.classList.contains('is-open')) {
+        closePreorderDialog();
+      }
+    });
+
+    preorderForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!preorderForm) return;
+      syncPreorderSelectionFields();
+      setPreorderStatus('Sending request…');
+      preorderSubmitButton?.setAttribute('disabled', 'disabled');
+      if (preorderSubmitButton) preorderSubmitButton.textContent = 'Sending…';
+
+      try {
+        const response = await fetch(preorderForm.action, {
+          method: 'POST',
+          body: new FormData(preorderForm),
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (!response.ok) throw new Error('Submission failed');
+
+        preorderForm.reset();
+        syncPreorderSelectionFields();
+        preorderFormWrap?.classList.add('hidden');
+        preorderSuccessState?.classList.add('is-visible');
+        setPreorderStatus('');
+        showToast('Thank you, we’ll be in touch soon.');
+        setTimeout(() => {
+          closePreorderDialog();
+          resetPreorderState();
+        }, 2600);
+      } catch (error) {
+        setPreorderStatus('Something went wrong. Please try again.', true);
+        preorderSubmitButton?.removeAttribute('disabled');
+        if (preorderSubmitButton) preorderSubmitButton.textContent = 'Submit Preorder';
+      }
+    });
+
     restoreState();
     applyInteractiveState();
     applyDesignStudioState();
+    updatePreorderAvailability();
   </script>
 
 </body>
