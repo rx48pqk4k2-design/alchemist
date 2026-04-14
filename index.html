@@ -527,9 +527,8 @@
               <label class="text-xs uppercase tracking-[0.18em] text-muted block mb-2">Intention</label>
               <input id="intentionInput" type="text" value="Clarity and calm" class="interactive-input w-full rounded-sm border border-line bg-surface px-4 py-3 outline-none">
             </div>
-            <button type="button" id="previewConceptButton" data-toast="Refreshing concept preview" class="interactive-cta w-full rounded-sm bg-primary px-6 py-4 text-sm uppercase tracking-[0.18em] text-white">Preview Concept</button>
+            <button type="button" id="preorderButton" class="interactive-cta w-full rounded-sm bg-primary px-6 py-4 text-sm uppercase tracking-[0.18em] text-white" aria-haspopup="dialog" aria-controls="preorderModal" disabled>Preorder</button>
             <div class="pt-3 border-t border-line/70">
-              <button type="button" id="preorderButton" class="preorder-trigger interactive-cta w-full rounded-sm border border-primary/16 bg-paper px-6 py-4 text-sm uppercase tracking-[0.18em] text-primary" aria-haspopup="dialog" aria-controls="preorderModal" disabled>Preorder</button>
               <p id="preorderHint" class="preorder-hint mt-3 text-[11px] uppercase tracking-[0.16em] text-muted/80">Select a color and motif to continue.</p>
             </div>
           </div>
@@ -664,7 +663,6 @@
     const colorButtons = [...document.querySelectorAll('.js-color-swatch')];
     const motifButtons = [...document.querySelectorAll('.js-motif-button')];
     const intentionInput = document.getElementById('intentionInput');
-    const previewConceptButton = document.getElementById('previewConceptButton');
     const toast = document.getElementById('feedbackToast');
     const toastLinks = [...document.querySelectorAll('[data-toast]')];
     const productMainImage = document.getElementById('productMainImage');
@@ -853,13 +851,6 @@
     intentionInput?.addEventListener('input', (event) => {
       state.intention = event.target.value;
       rememberState();
-    });
-
-    previewConceptButton?.addEventListener('click', () => {
-      const colorLabel = getColorConfig(state.color).label || state.color;
-      const motifLabel = getMotifConfig(state.motif).label || state.motif;
-      applyInteractiveState({ flashPreview: true });
-      showToast(`Preview ready · ${colorLabel} · ${motifLabel}`);
     });
 
     toastLinks.forEach(link => {
